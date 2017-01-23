@@ -12,7 +12,11 @@ defmodule Arc.Storage.S3 do
       |> ensure_keyword_list()
       |> Keyword.put(:acl, acl)
 
-    do_put(file, s3_key, s3_options)
+    out = do_put(file, s3_key, s3_options)
+    if String.starts_with?(file.file_name, System.tmp_dir) do
+      File.rm(file.file_name)
+    end
+    out
   end
 
   def url(definition, version, file_and_scope, options \\ []) do
